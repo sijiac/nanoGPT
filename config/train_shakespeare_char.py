@@ -9,9 +9,14 @@ log_interval = 10 # don't print too too often
 # we expect to overfit on this small dataset, so only save when val improves
 always_save_checkpoint = False
 
-wandb_log = False # override via command line if you like
+import time
+ENABLE_NANO_MLP = os.environ.get("NANO_MLP", "0") == "1"
+
+timestamp = time.strftime('%Y%m%d.%H%M')
+
+wandb_log = True # override via command line if you like
 wandb_project = 'shakespeare-char'
-wandb_run_name = 'mini-gpt'
+wandb_run_name = f'nanoGPT-{timestamp}-NANO_MLP={ENABLE_NANO_MLP}'
 
 dataset = 'shakespeare_char'
 gradient_accumulation_steps = 1
