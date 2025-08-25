@@ -68,7 +68,7 @@ class _NanoFlashAttention(torch.autograd.Function):
         ctx.scale = scale
         ctx.causal = causal
         ctx.is_dropped = is_dropped
-        ctx.dropout_p = dropout_p
+        ctx.keep_p = 1.0 - dropout_p
         return o
     
     @staticmethod
@@ -79,7 +79,7 @@ class _NanoFlashAttention(torch.autograd.Function):
         scale = ctx.scale
         causal = ctx.causal
         is_dropped = ctx.is_dropped
-        dropout_p = ctx.dropout_p
+        keep_p = ctx.keep_p
 
         # D: (B, Hq, T)
         # dp = do @ vT
@@ -92,7 +92,7 @@ class _NanoFlashAttention(torch.autograd.Function):
 
         if is_dropped:
             mask_dropped = (dropped_p != 0).to(dp.dtype)
-            dp = dp * mask_dropped / dropout_p
+            dp = dp * mask_dropped / keep_p
         else:
             dp = dp
 

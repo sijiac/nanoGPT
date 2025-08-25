@@ -11,12 +11,13 @@ always_save_checkpoint = False
 
 import time
 ENABLE_NANO_MLP = os.environ.get("NANO_MLP", "0") == "1"
+ENABLE_NANO_ATTN = os.environ.get("NANO_ATTN", "0") == "1"
 
 timestamp = time.strftime('%Y%m%d.%H%M')
 
 wandb_log = True # override via command line if you like
 wandb_project = 'shakespeare-char'
-wandb_run_name = f'nanoGPT-{timestamp}-NANO_MLP={ENABLE_NANO_MLP}'
+wandb_run_name = f'nanoGPT-{timestamp}-NANO_MLP={ENABLE_NANO_MLP}-NANO_ATTN={ENABLE_NANO_ATTN}'
 
 dataset = 'shakespeare_char'
 gradient_accumulation_steps = 1
