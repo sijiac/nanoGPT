@@ -175,7 +175,7 @@ class _LinearFunc(torch.autograd.Function):
         # c = x @ wT + b
         # dC = grad_output
         # dx = dC @ w
-        # dw = dC.T @ xT
+        # dw = dC.T @ x
         # db = dC.sum(0) ---> why?
         # because:
         # dL/db_j = sum(dL/dC_ij * dC_ij/db_j for i in range(M))
