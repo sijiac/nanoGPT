@@ -62,11 +62,15 @@ class GPTConfig:
 class GPT(nn.Module):
 
     def __init__(self, config):
+        print("=" * 70)
+        print("=== Model Build from Scratch Start ===")
+        print("-" * 70)
+
         super().__init__()
         assert config.vocab_size is not None
         assert config.block_size is not None
         self.config = config
-        
+
         self.transformer = nn.ModuleDict(
             dict(
                 wte=nn.Embedding(config.vocab_size, config.n_embd),
@@ -94,8 +98,25 @@ class GPT(nn.Module):
                     p, mean=0.0, std=0.02 / math.sqrt(2 * config.n_layer)
                 )
 
+        # optionally zero-initialize position embeddings
+        enable_pe_zero_init = os.environ.get("ENABLE_PE_ZERO_INIT", "0") == "1"
+        if enable_pe_zero_init:
+            torch.nn.init.zeros_(self.transformer.wpe.weight)
+            print("Position embeddings initialized to zero (ENABLE_PE_ZERO_INIT=1)")
+
         # report number of parameters
         print("number of parameters: %.2fM" % (self.get_num_params() / 1e6,))
+
+        # verify position embedding initialization
+        wpe_is_zero = torch.all(self.transformer.wpe.weight == 0).item()
+        if enable_pe_zero_init:
+            assert wpe_is_zero, "ENABLE_PE_ZERO_INIT=1 but position embeddings are not all zero"
+        else:
+            assert not wpe_is_zero, "Position embeddings are all zero but ENABLE_PE_ZERO_INIT is not set"
+
+        print("-" * 70)
+        print("=== Model Build from Scratch End ===")
+        print("=" * 70)
 
     def get_num_params(self, non_embedding=True):
         """
